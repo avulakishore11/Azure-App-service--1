@@ -29,9 +29,14 @@ variable "storage_account_name" {
 }
 
 variable "storage_account_access_key" {
-  description = "Access key for the storage account used by the Logic App Standard runtime."
+  description = "Access key for the storage account used by the Logic App Standard file share."
   type        = string
   sensitive   = true
+}
+
+variable "storage_account_id" {
+  description = "Resource ID of the storage account — used to scope blob/queue/table MI role assignments."
+  type        = string
 }
 
 variable "app_insights_connection_string" {

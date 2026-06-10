@@ -34,12 +34,40 @@ resource "azurerm_logic_app_standard" "logic_app" {
   }
 
   app_settings = {
-    "WEBSITE_VNET_ROUTE_ALL"                  = "1"
-    "FUNCTIONS_WORKER_RUNTIME"                = "node"
-    "WEBSITE_NODE_DEFAULT_VERSION"            = "~18"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"   = var.app_insights_connection_string
-    "APPINSIGHTS_INSTRUMENTATIONKEY"          = var.app_insights_instrumentation_key
+    "WEBSITE_VNET_ROUTE_ALL"                     = "1"
+    "FUNCTIONS_WORKER_RUNTIME"                   = "node"
+    "WEBSITE_NODE_DEFAULT_VERSION"               = "~18"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"      = var.app_insights_connection_string
+    "APPINSIGHTS_INSTRUMENTATIONKEY"             = var.app_insights_instrumentation_key
     "ApplicationInsightsAgent_EXTENSION_VERSION" = "~3"
+
+    # Blob, Queue, Table — use system-assigned MI instead of access key.
+    # Double-underscore prefix tells the Functions runtime to authenticate
+    # via managed identity; the file share still uses the access key above.
+    "AzureWebJobsStorage__accountName" = var.storage_account_name
   }
+}
+
+# -----------------------------------------------------------------------------
+# Role assignments — scope each to the storage account, not the subscription,
+# to follow least-privilege. System-assigned identity is created with the Logic
+# App so principal_id is available once the resource exists.
+# -----------------------------------------------------------------------------
+resource "azurerm_role_assignment" "logic_app_storage_blob_owner" {
+  scope                = var.storage_account_id
+  role_definition_name = "Storage Blob Data Owner"
+  principal_id         = azurerm_logic_app_standard.logic_app.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "logic_app_storage_queue_contributor" {
+  scope                = var.storage_account_id
+  role_definition_name = "Storage Queue Data Contributor"
+  principal_id         = azurerm_logic_app_standard.logic_app.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "logic_app_storage_table_contributor" {
+  scope                = var.storage_account_id
+  role_definition_name = "Storage Table Data Contributor"
+  principal_id         = azurerm_logic_app_standard.logic_app.identity[0].principal_id
 }
 

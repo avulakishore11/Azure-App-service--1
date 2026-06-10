@@ -88,6 +88,7 @@ module "logic_app" {
   subnet_id                        = module.network.logic_app_subnet_id
   storage_account_name             = module.storage.storage_account_name
   storage_account_access_key       = module.storage.storage_account_primary_access_key
+  storage_account_id               = module.storage.storage_account_id
   app_insights_connection_string   = module.monitoring.app_insights_connection_string
   app_insights_instrumentation_key = module.monitoring.app_insights_instrumentation_key
   health_check_path                = var.health_check_path
