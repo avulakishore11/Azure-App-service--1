@@ -18,6 +18,11 @@ variable "sku_name" {
   type        = string
 }
 
+variable "logic_app_subnet_id" {
+  description = "Resource ID of the Logic App subnet — allowed through storage network rules."
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to all storage resources."
   type        = map(string)

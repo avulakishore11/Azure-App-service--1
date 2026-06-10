@@ -38,6 +38,7 @@ module "storage" {
   resource_group_name  = azurerm_resource_group.resource_group.name
   storage_account_name = local.storage_account_name
   sku_name             = var.storage_sku
+  logic_app_subnet_id  = module.network.logic_app_subnet_id
   tags                 = local.tags
 }
 
