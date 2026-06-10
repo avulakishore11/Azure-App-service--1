@@ -26,6 +26,9 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
+# Azurite local storage emulator (created by Azure Logic Apps VS Code extension)
+__azurite_db_*.json
+
 # OS
 .DS_Store
 Thumbs.db
