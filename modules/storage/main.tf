@@ -11,8 +11,6 @@ resource "azurerm_storage_account" "storage_account" {
   account_kind                    = "StorageV2"
   https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = false
-  # Selected networks mode — public endpoint stays active but default_action
-  # = Deny blocks everything except the explicit allowlist below.
   public_network_access_enabled   = true
   # Shared key access must remain enabled — Logic App Standard uses the
   # account name + key to mount its internal file share at startup.
@@ -20,10 +18,8 @@ resource "azurerm_storage_account" "storage_account" {
   tags                            = var.tags
 
   network_rules {
-    default_action             = "Allow"
-    bypass                     = ["AzureServices", "Logging", "Metrics"]
-    ip_rules                   = ["170.55.159.52"]
-    virtual_network_subnet_ids = [var.logic_app_subnet_id]
+    default_action = "Allow"
+    bypass         = ["AzureServices", "Logging", "Metrics"]
   }
 }
 

@@ -31,13 +31,6 @@ resource "azurerm_logic_app_standard" "logic_app" {
       priority                  = 500
       name                      = "AllowFromVNetSubnet"
     }
-
-    ip_restriction {
-      ip_address = "170.55.159.52/32"
-      action     = "Allow"
-      priority   = 501
-      name       = "AllowCorporateIP"
-    }
   }
 
   app_settings = {
