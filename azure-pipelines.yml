@@ -1,9 +1,8 @@
 trigger:
   branches:
     include:
-      - test/feature-branch
-    exclude:
-      - feature/updated-with-all-code
+      - main
+      - feature/*
 
 pool:
   vmImage: ubuntu-latest
@@ -113,7 +112,7 @@ stages:
 - stage: UAT
   displayName: 'Deploy to UAT'
   dependsOn: Dev
-  condition: succeeded('Dev')
+  condition: and(succeeded('Dev'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   variables:
     varFile: 'environment/uat.tfvars'
     stateKey: 'uat/terraform.tfstate'
@@ -166,7 +165,7 @@ stages:
 - stage: Prod
   displayName: 'Deploy to Prod'
   dependsOn: UAT
-  condition: succeeded('UAT')
+  condition: and(succeeded('UAT'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   variables:
     varFile: 'environment/prod.tfvars'
     stateKey: 'prod/terraform.tfstate'
