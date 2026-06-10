@@ -1,0 +1,217 @@
+trigger:
+  branches:
+    include:
+      - test/feature-branch
+    exclude:
+      - feature/updated-with-all-code
+
+pool:
+  vmImage: ubuntu-latest
+
+# Pipeline secrets — add these in Azure DevOps UI:
+#   Pipeline → Edit → Variables → lock icon to mark as secret
+#   subscription_id    : Azure Subscription ID
+#   vm_admin_password  : VM local administrator password
+
+variables:
+- group: Windows_VM_Credentials         # variable group containing subscription_id and vm_admin_password
+- name: serviceConnection
+  value: 'Azure-to-ADO-svc-connection'
+- name: backendResourceGroup
+  value: 'rgeus-tftest-01'
+- name: backendStorageAccount
+  value: 'terrastatesa'
+- name: backendContainer
+  value: 'tfstate'
+- name: stateKey
+  value: 'dev/terraform.tfstate'
+- name: varFile
+  value: 'environment/dev.tfvars'
+
+stages:
+
+- stage: Validate
+  displayName: 'Validate'
+  jobs:
+  - job: StaticChecks
+    displayName: 'Validate and Security Scan'
+    steps:
+
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: 'latest'
+
+    # Use TerraformTaskV4 so provider + module installation gets proper auth.
+    # -backend=false skips remote state — only providers and local modules are installed.
+    # Backend params are required by the task's own input validation even with -backend=false.
+    - task: TerraformTaskV4@4
+      displayName: 'Init' 
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: $(serviceConnection)
+        backendAzureRmResourceGroupName: $(backendResourceGroup)
+        backendAzureRmStorageAccountName: $(backendStorageAccount)
+        backendAzureRmContainerName: $(backendContainer)
+        backendAzureRmKey: $(stateKey)
+
+    - script: terraform validate
+      displayName: 'Terraform Validate'
+      env:
+        TF_VAR_subscription_id: $(subscription_id)
+
+    - script: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+        trivy config . --exit-code 0    # --exit-code 0: report findings but don't fail the build yet
+      displayName: 'Trivy Security Scan'
+
+- stage: Dev
+  displayName: 'Deploy to Dev'
+  dependsOn: Validate
+  condition: succeeded('Validate')
+  jobs:
+  - job: TerraformDev
+    displayName: 'Terraform Dev'
+    steps:
+
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: 'latest'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Init (Dev)'
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: $(serviceConnection)
+        backendAzureRmResourceGroupName: $(backendResourceGroup)
+        backendAzureRmStorageAccountName: $(backendStorageAccount)
+        backendAzureRmContainerName: $(backendContainer)
+        backendAzureRmKey: $(stateKey)
+
+    - task: TerraformTaskV4@4
+      displayName: 'Plan (Dev)'
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        commandOptions: '-var-file=$(varFile) -out=tfplan-dev'
+        environmentServiceNameAzureRM: $(serviceConnection)
+      env:
+        TF_VAR_subscription_id: $(subscription_id)
+        TF_VAR_vm_admin_password: $(vm_admin_password)
+
+    - task: TerraformTaskV4@4
+      displayName: 'Apply (Dev)'
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        commandOptions: '-auto-approve tfplan-dev'  # applies the saved plan file — no re-evaluation
+        environmentServiceNameAzureRM: $(serviceConnection)
+
+- stage: UAT
+  displayName: 'Deploy to UAT'
+  dependsOn: Dev
+  condition: succeeded('Dev')
+  variables:
+    varFile: 'environment/uat.tfvars'
+    stateKey: 'uat/terraform.tfstate'
+  jobs:
+  - deployment: TerraformUAT
+    displayName: 'Terraform UAT'
+    environment: 'uat'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - checkout: self
+
+          - task: TerraformInstaller@1
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: 'latest'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Init (UAT)'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(backendResourceGroup)
+              backendAzureRmStorageAccountName: $(backendStorageAccount)
+              backendAzureRmContainerName: $(backendContainer)
+              backendAzureRmKey: $(stateKey)
+
+          - task: TerraformTaskV4@4
+            displayName: 'Plan (UAT)'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              commandOptions: '-var-file=$(varFile) -out=tfplan-uat'
+              environmentServiceNameAzureRM: $(serviceConnection)
+            env:
+              TF_VAR_subscription_id: $(subscription_id)
+              TF_VAR_vm_admin_password: $(vm_admin_password)
+
+          - task: TerraformTaskV4@4
+            displayName: 'Apply (UAT)'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              commandOptions: '-auto-approve tfplan-uat'
+              environmentServiceNameAzureRM: $(serviceConnection)
+
+- stage: Prod
+  displayName: 'Deploy to Prod'
+  dependsOn: UAT
+  condition: succeeded('UAT')
+  variables:
+    varFile: 'environment/prod.tfvars'
+    stateKey: 'prod/terraform.tfstate'
+  jobs:
+  - deployment: TerraformProd
+    displayName: 'Terraform Prod'
+    environment: 'prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - checkout: self
+
+          - task: TerraformInstaller@1
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: 'latest'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Init (Prod)'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(backendResourceGroup)
+              backendAzureRmStorageAccountName: $(backendStorageAccount)
+              backendAzureRmContainerName: $(backendContainer)
+              backendAzureRmKey: $(stateKey)
+
+          - task: TerraformTaskV4@4
+            displayName: 'Plan (Prod)'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              commandOptions: '-var-file=$(varFile) -out=tfplan-prod'
+              environmentServiceNameAzureRM: $(serviceConnection)
+            env:
+              TF_VAR_subscription_id: $(subscription_id)
+              TF_VAR_vm_admin_password: $(vm_admin_password)
+
+          - task: TerraformTaskV4@4
+            displayName: 'Apply (Prod)'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              commandOptions: '-auto-approve tfplan-prod'
+              environmentServiceNameAzureRM: $(serviceConnection)

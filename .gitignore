@@ -1,0 +1,31 @@
+# Terraform state
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+environment/*/terraform.tfstate*
+
+# Terraform working directories
+.terraform/
+.terraform.lock.hcl
+
+# Generated backend key files
+environment/*-backend.hcl
+
+# Terraform plan files
+tfplan*
+*.tfplan
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Sensitive variable files
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# OS
+.DS_Store
+Thumbs.db
