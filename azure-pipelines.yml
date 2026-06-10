@@ -45,7 +45,7 @@ stages:
     # -backend=false skips remote state — only providers and local modules are installed.
     # Backend params are required by the task's own input validation even with -backend=false.
     - task: TerraformTaskV4@4
-      displayName: 'Init' 
+      displayName: 'Init'
       inputs:
         provider: 'azurerm'
         command: 'init'
@@ -54,6 +54,8 @@ stages:
         backendAzureRmStorageAccountName: $(backendStorageAccount)
         backendAzureRmContainerName: $(backendContainer)
         backendAzureRmKey: $(stateKey)
+      env:
+        ARM_USE_AZUREAD: 'true'
 
     - script: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
@@ -84,6 +86,8 @@ stages:
         backendAzureRmStorageAccountName: $(backendStorageAccount)
         backendAzureRmContainerName: $(backendContainer)
         backendAzureRmKey: $(stateKey)
+      env:
+        ARM_USE_AZUREAD: 'true'
 
     - task: TerraformTaskV4@4
       displayName: 'Plan (Dev)'
@@ -137,6 +141,8 @@ stages:
               backendAzureRmStorageAccountName: $(backendStorageAccount)
               backendAzureRmContainerName: $(backendContainer)
               backendAzureRmKey: $(stateKey)
+            env:
+              ARM_USE_AZUREAD: 'true'
 
           - task: TerraformTaskV4@4
             displayName: 'Plan (UAT)'
@@ -190,6 +196,8 @@ stages:
               backendAzureRmStorageAccountName: $(backendStorageAccount)
               backendAzureRmContainerName: $(backendContainer)
               backendAzureRmKey: $(stateKey)
+            env:
+              ARM_USE_AZUREAD: 'true'
 
           - task: TerraformTaskV4@4
             displayName: 'Plan (Prod)'
