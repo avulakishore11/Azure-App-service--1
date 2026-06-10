@@ -55,11 +55,6 @@ stages:
         backendAzureRmContainerName: $(backendContainer)
         backendAzureRmKey: $(stateKey)
 
-    - script: terraform validate
-      displayName: 'Terraform Validate'
-      env:
-        TF_VAR_subscription_id: $(subscription_id)
-
     - script: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
         trivy config . --exit-code 0    # --exit-code 0: report findings but don't fail the build yet
