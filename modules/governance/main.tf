@@ -31,8 +31,8 @@ resource "azurerm_management_lock" "rg_lock" {
 # a resource tagged "Project", causing all resource creation to be Denied.
 
 locals {
-  # Must match the keys in the tags map in locals.tf exactly
-  required_tags = toset(["Project", "Department", "CreatedBy", "Environment"])
+  # Must match the keys in the tags map in locals.tf exactly (all lowercase)
+  required_tags = toset(["project", "department", "created_by", "environment", "managed_by"])
 
   policy_require_tag_on_resources       = "/providers/Microsoft.Authorization/policyDefinitions/871b6d14-10aa-478d-b590-94f262ecfa99"
   policy_require_tag_on_resource_groups = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"

@@ -18,9 +18,3 @@ variable "log_categories" {
   type        = list(string)
   default     = []
 }
-
-variable "metrics_enabled" {
-  description = "Whether to enable AllMetrics collection."
-  type        = bool
-  default     = true
-}

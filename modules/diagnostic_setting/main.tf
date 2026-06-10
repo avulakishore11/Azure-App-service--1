@@ -18,8 +18,7 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting" {
     }
   }
 
-  metric {
+  enabled_metric {
     category = "AllMetrics"
-    enabled  = var.metrics_enabled
   }
 }

@@ -47,9 +47,10 @@ locals {
 
   # Required Kaseya tags applied to every resource
   tags = {
-    Project     = var.project
-    Department  = var.department
-    CreatedBy   = var.created_by
-    Environment = local.env
+    project     = var.project
+    department  = var.department
+    created_by  = var.created_by
+    environment = local.env
+    managed_by  = "terraform"
   }
 }
