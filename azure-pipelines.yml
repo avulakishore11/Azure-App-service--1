@@ -1,9 +1,9 @@
 trigger:
   branches:
     include:
-      - test/feature-branch
+      - feature/dev-infra
     exclude:
-      - feature/updated-with-all-code
+      - master/main
 
 pool:
   vmImage: ubuntu-latest
