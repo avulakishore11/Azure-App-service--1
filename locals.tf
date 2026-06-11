@@ -41,10 +41,20 @@ locals {
   # VM names: max 15 chars to match NETBIOS limit
   vm_name = substr(lower("vm${local.location_code}-${local.app}${local.env}${local.instance_segment}"), 0, 15)
 
-  identity_name      = "id-${local.common_prefix}-${local.app}${local.env_segment}"
-  workspace_name     = "law-${local.common_prefix}-${local.app}${local.env_segment}"
-  app_insights_name  = "appi-${local.common_prefix}-${local.app}${local.env_segment}"
-  redis_name         = "redis-${local.common_prefix}-${local.app}${local.env_segment}${local.instance_segment}"
+  identity_name     = "id-${local.common_prefix}-${local.app}${local.env_segment}"
+  workspace_name    = "law-${local.common_prefix}-${local.app}${local.env_segment}"
+  app_insights_name = "appi-${local.common_prefix}-${local.app}${local.env_segment}"
+
+  # Azure Managed Redis names are alphanumeric only, max 60 chars.
+  redis_name = lower(substr(
+    replace(
+      "redis${local.sub}${local.location_code}${local.app}${local.env}${var.instance}",
+      "/[^a-z0-9]/",
+      ""
+    ),
+    0,
+    60
+  ))
 
   # Required Kaseya tags applied to every resource
   tags = {
