@@ -43,6 +43,21 @@ variable "file_dns_zone_id" {
   type        = string
 }
 
+variable "redis_name" {
+  description = "Redis instance name — used to name the private endpoint resource."
+  type        = string
+}
+
+variable "redis_resource_id" {
+  description = "Resource ID of the Azure Managed Redis instance."
+  type        = string
+}
+
+variable "redis_dns_zone_id" {
+  description = "Resource ID of the Redis private DNS zone (privatelink.<region>.redis.azure.net)."
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to all private endpoint resources."
   type        = map(string)

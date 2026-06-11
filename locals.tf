@@ -44,6 +44,7 @@ locals {
   identity_name      = "id-${local.common_prefix}-${local.app}${local.env_segment}"
   workspace_name     = "law-${local.common_prefix}-${local.app}${local.env_segment}"
   app_insights_name  = "appi-${local.common_prefix}-${local.app}${local.env_segment}"
+  redis_name         = "redis-${local.common_prefix}-${local.app}${local.env_segment}${local.instance_segment}"
 
   # Required Kaseya tags applied to every resource
   tags = {

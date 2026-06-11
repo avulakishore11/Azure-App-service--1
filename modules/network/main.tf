@@ -128,6 +128,7 @@ resource "azurerm_subnet" "private_endpoint" {
   depends_on = [azurerm_subnet.vm]
 }
 
+
 # =============================================================================
 # NSG → Subnet Associations
 # [Change 6] Separate association resources replace the deprecated inline

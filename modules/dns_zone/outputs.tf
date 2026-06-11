@@ -17,3 +17,8 @@ output "file_dns_zone_id" {
   value       = azurerm_private_dns_zone.file.id
   description = "Resource ID of the file private DNS zone."
 }
+
+output "redis_dns_zone_id" {
+  value     = azurerm_private_dns_zone.redis.id
+  description = "Resource ID of the Redis private DNS zone."
+}

@@ -23,3 +23,5 @@ project     = "vm-ss-automation"
 department  = "corporate IT"
 created_by  = "kishore avula"
 update_ring = "Ring 3"
+
+redis_sku_size = "Balanced_B1"

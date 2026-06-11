@@ -34,7 +34,7 @@ resource "azurerm_logic_app_standard" "logic_app" {
   }
 
   app_settings = {
-    "WEBSITE_VNET_ROUTE_ALL"                     = "1"
+    "WEBSITE_VNET_ROUTE_ALL"                     = "1" # Route all outbound traffic through the VNet, including to Azure services. if you want to allow direct access to Azure services, set this to 0 and add service endpoints for the storage account.
     "FUNCTIONS_WORKER_RUNTIME"                   = "dotnet"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"      = var.app_insights_connection_string
     "APPINSIGHTS_INSTRUMENTATIONKEY"             = var.app_insights_instrumentation_key

@@ -8,7 +8,7 @@ instance               = "01"
 admin_username = "azureadmin"
 admin_password = "ChangeThisPassword123!"
 
-vm_size     = "Standard_D4s_v5"
+vm_size     = "Standard_D4s_v2"
 storage_sku = "Standard_LRS"
 
 vnet_address_prefix            = "10.3.0.0/16"
@@ -22,3 +22,5 @@ project    = "vm-ss-automation"
 department = "corporate IT"
 created_by = "kishore avula"
 environment = "dev"
+
+redis_sku_size = "Balanced_B0"

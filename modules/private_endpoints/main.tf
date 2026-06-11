@@ -16,7 +16,7 @@
 # Blob Private Endpoint
 # -----------------------------------------------------------------------------
 resource "azurerm_private_endpoint" "blob" {
-  name                = "${var.storage_account_name}-blob-pe"
+  name                = "pe-blob-${var.storage_account_name}"
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_endpoint_subnet_id
@@ -31,7 +31,7 @@ resource "azurerm_private_endpoint" "blob" {
   }
 
   private_dns_zone_group {
-    name                 = "blob-dzg"
+    name                 = "blob_dns_zone_group"
     private_dns_zone_ids = [var.blob_dns_zone_id]
   }
 }
@@ -40,7 +40,7 @@ resource "azurerm_private_endpoint" "blob" {
 # Table Private Endpoint
 # -----------------------------------------------------------------------------
 resource "azurerm_private_endpoint" "table" {
-  name                = "${var.storage_account_name}-table-pe"
+  name                = "pe-table-${var.storage_account_name}"
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_endpoint_subnet_id
@@ -54,7 +54,7 @@ resource "azurerm_private_endpoint" "table" {
   }
 
   private_dns_zone_group {
-    name                 = "table-dzg"
+    name                 = "table_dns_zone_group"
     private_dns_zone_ids = [var.table_dns_zone_id]
   }
 }
@@ -63,7 +63,7 @@ resource "azurerm_private_endpoint" "table" {
 # Queue Private Endpoint
 # -----------------------------------------------------------------------------
 resource "azurerm_private_endpoint" "queue" {
-  name                = "${var.storage_account_name}-queue-pe"
+  name                = "pe-queue-${var.storage_account_name}"
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_endpoint_subnet_id
@@ -77,7 +77,7 @@ resource "azurerm_private_endpoint" "queue" {
   }
 
   private_dns_zone_group {
-    name                 = "queue-dzg"
+    name                 = "queue_dns_zone_group"
     private_dns_zone_ids = [var.queue_dns_zone_id]
   }
 }
@@ -86,7 +86,7 @@ resource "azurerm_private_endpoint" "queue" {
 # File Private Endpoint
 # -----------------------------------------------------------------------------
 resource "azurerm_private_endpoint" "file" {
-  name                = "${var.storage_account_name}-file-pe"
+  name                = "pe-file-${var.storage_account_name}"
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_endpoint_subnet_id
@@ -100,8 +100,33 @@ resource "azurerm_private_endpoint" "file" {
   }
 
   private_dns_zone_group {
-    name                 = "file-dzg"
+    name                 = "file_dns_zone_group"
     private_dns_zone_ids = [var.file_dns_zone_id]
   }
 }
 
+# -----------------------------------------------------------------------------
+# Private DNS Zone — Azure Managed Redis uses a REGION-SPECIFIC zone
+# (different from legacy privatelink.redis.cache.windows.net)
+# -----------------------------------------------------------------------------
+
+resource "azurerm_private_endpoint" "redis" {
+  name                = "pe-redis-${var.redis_name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoint_subnet_id
+  tags                = var.tags
+
+  private_service_connection {
+    name                           = "redisConnection"
+    private_connection_resource_id = var.redis_resource_id
+    is_manual_connection           = false
+    subresource_names              = ["redisEnterprise"]
+
+  }
+
+  private_dns_zone_group {
+    name                 = "redis_dns_zone_group"
+    private_dns_zone_ids = [var.redis_dns_zone_id]
+  }
+}

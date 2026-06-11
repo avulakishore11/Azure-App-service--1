@@ -113,3 +113,9 @@ variable "health_check_path" {
   type        = string
   default     = "/api/health"
 }
+
+variable "redis_sku_size" {
+  description = "Azure Managed Redis Balanced tier size. Use Balanced_B0 for dev/uat; increase for prod based on observed memory and client metrics."
+  type        = string
+  default     = "Balanced_B0"
+}

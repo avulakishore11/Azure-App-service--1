@@ -2,14 +2,16 @@
 # Deployment order (Terraform resolves via implicit refs + explicit depends_on):
 #
 #   1. azurerm_resource_group.resource_group
-#   2. module.network        (needs RG)
-#   3. module.storage        (needs RG + network)
-#   4. module.private_endpoints (needs RG, network, storage)
-#   5. module.logic_app      (needs RG, network, storage)
-#   6. module.vm             (needs RG, network)
-#   7. module.identity       (needs RG, VM id)
-#   8. module.governance     (needs RG id)
-#   9. azurerm_role_assignment (needs VM id + Logic App identity)
+#   2. module.network          (needs RG)
+#   3. module.storage          (needs RG + network)
+#   4. module.dns_zone         (needs RG, VNet)
+#   5. module.vm               (needs RG, network)
+#   6. module.identity         (needs RG, VM id)
+#   7. module.redis_cache      (needs RG id + UAMI principal_id)
+#   8. module.private_endpoints (needs RG, network, storage, dns_zone, redis_cache)
+#   9. module.logic_app        (needs RG, network, storage)
+#  10. module.governance       (needs RG id)
+#  11. azurerm_role_assignment (needs VM id + Logic App identity)
 # =============================================================================
 
 resource "azurerm_resource_group" "resource_group" {
@@ -53,9 +55,12 @@ module "private_endpoints" {
   table_dns_zone_id          = module.dns_zone.table_dns_zone_id
   queue_dns_zone_id          = module.dns_zone.queue_dns_zone_id
   file_dns_zone_id           = module.dns_zone.file_dns_zone_id
+  redis_name                 = local.redis_name
+  redis_resource_id          = module.redis_cache.redis_id
+  redis_dns_zone_id          = module.dns_zone.redis_dns_zone_id
   tags                       = local.tags
 
-  depends_on = [module.network, module.storage, module.dns_zone]
+  depends_on = [module.network, module.storage, module.dns_zone, module.redis_cache]
 }
 
 module "dns_zone" {
@@ -63,6 +68,7 @@ module "dns_zone" {
 
   resource_group_name = azurerm_resource_group.resource_group.name
   vnet_id             = module.network.vnet_id
+  location            = var.location
   tags                = local.tags
 }
 
@@ -129,6 +135,18 @@ module "governance" {
   tags                = local.tags
 }
 
+module "redis_cache" {
+  source = "./modules/redis_cache"
+
+  location             = var.location
+  resource_group_name  = azurerm_resource_group.resource_group.name
+  resource_group_id    = azurerm_resource_group.resource_group.id
+  redis_name           = local.redis_name
+  redis_sku_size       = var.redis_sku_size
+  uami_principal_id    = module.identity.identity_principal_id
+  tags                 = local.tags
+}
+
 resource "azurerm_role_assignment" "logic_app_vm_contributor" {
   scope                = module.vm.vm_id
   role_definition_name = "Virtual Machine Contributor"
@@ -173,6 +191,15 @@ module "diag_vm" {
   source                     = "./modules/diagnostic_setting"
   name                       = "diag-${local.vm_name}"
   target_resource_id         = module.vm.vm_id
+  log_analytics_workspace_id = module.monitoring.workspace_id
+  log_categories             = []
+}
+
+# Azure Managed Redis — metrics only (no GA log categories for redisEnterprise)
+module "diag_redis" {
+  source                     = "./modules/diagnostic_setting"
+  name                       = "diag-${local.redis_name}"
+  target_resource_id         = module.redis_cache.redis_id
   log_analytics_workspace_id = module.monitoring.workspace_id
   log_categories             = []
 }

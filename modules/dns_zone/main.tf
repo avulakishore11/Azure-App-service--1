@@ -47,7 +47,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "table" {
   #resource_group_name   = var.hub_resource_group_name
   resource_group_name =  var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.table.name
-  virtual_network_id    = var.vnet_id
+  virtual_network_id    = var.vnet_id  # should be the HUB VNet where the zone lives, not the spoke VNet where the PEs live
   registration_enabled  = false
   tags                  = var.tags
 }
@@ -68,7 +68,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "queue" {
   #resource_group_name   = var.hub_resource_group_name
   resource_group_name =  var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.queue.name
-  virtual_network_id    = var.vnet_id
+  virtual_network_id    = var.vnet_id  # should be the HUB VNet where the zone lives, not the spoke VNet where the PEs live
   registration_enabled  = false
   tags                  = var.tags
 }
@@ -89,7 +89,27 @@ resource "azurerm_private_dns_zone_virtual_network_link" "file" {
   #resource_group_name   = var.hub_resource_group_name
   resource_group_name =  var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.file.name
-  virtual_network_id    = var.vnet_id
+  virtual_network_id    = var.vnet_id  # should be the HUB VNet where the zone lives, not the spoke VNet where the PEs live
+  registration_enabled  = false
+  tags                  = var.tags
+}
+
+# -----------------------------------------------------------------------------
+# Private DNS Zone — Azure Managed Redis uses a REGION-SPECIFIC zone
+# (different from legacy privatelink.redis.cache.windows.net)
+# -----------------------------------------------------------------------------
+resource "azurerm_private_dns_zone" "redis" {
+  name                = "privatelink.${var.location}.redis.azure.net"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
+
+# Link zone to HUB VNet — spokes resolve through the hub DNS resolver
+resource "azurerm_private_dns_zone_virtual_network_link" "hub_link" {
+  name                  = "link-hub"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.redis.name
+  virtual_network_id    = var.vnet_id # should be the HUB VNet where the zone lives, not the spoke VNet where the PEs live
   registration_enabled  = false
   tags                  = var.tags
 }
