@@ -4,6 +4,14 @@
 # legacy Enterprise SKUs; Azure Managed Redis (Balanced/MemoryOptimized/etc.)
 # is provisioned via the Microsoft.Cache/redisEnterprise API using azapi.
 # -----------------------------------------------------------------------------
+terraform {
+  required_providers {
+    azapi = {
+      source = "azure/azapi"
+    }
+  }
+}
+
 resource "azapi_resource" "redis" {
   type      = "Microsoft.Cache/redisEnterprise@2024-09-01-preview"
   name      = var.redis_name
@@ -32,8 +40,8 @@ resource "azapi_resource" "redis_db" {
 
   body = {
     properties = {
-      clientProtocol   = "Encrypted" # TLS required
-      port             = 10000       # Azure Managed Redis port (NOT 6380)
+      clientProtocol   = "Encrypted"  # TLS required
+      port             = 10000        # Azure Managed Redis port (NOT 6380)
       evictionPolicy   = "NoEviction" # sessions must not be silently evicted; memory alerts give early warning
       clusteringPolicy = "OSSCluster"
       persistence = {
@@ -51,7 +59,7 @@ resource "azapi_resource" "redis_db" {
 # -----------------------------------------------------------------------------
 resource "azapi_resource" "redis_access_policy" {
   type      = "Microsoft.Cache/redisEnterprise/databases/accessPolicyAssignments@2024-09-01-preview"
-  name      = "appsvc-uami-contributor"
+  name      = "appsvcUamiContributor"
   parent_id = azapi_resource.redis_db.id
 
   body = {
