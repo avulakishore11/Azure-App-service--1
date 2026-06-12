@@ -14,7 +14,7 @@ variable "vm_name" {
 }
 
 variable "vm_size" {
-  description = "Size of the virtual machine." 
+  description = "Size of the virtual machine."
   type        = string
 }
 

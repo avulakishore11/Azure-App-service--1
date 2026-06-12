@@ -18,9 +18,9 @@ private_endpoint_subnet_prefix = "10.3.2.0/24"
 
 lock_level = "CanNotDelete"
 
-project    = "vm-ss-automation"
-department = "corporate IT"
-created_by = "kishore avula"
+project     = "vm-ss-automation"
+department  = "corporate IT"
+created_by  = "kishore avula"
 environment = "dev"
 
 redis_sku_size = "Balanced_B0"

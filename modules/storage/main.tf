@@ -14,8 +14,8 @@ resource "azurerm_storage_account" "storage_account" {
   public_network_access_enabled   = true
   # Shared key access must remain enabled — Logic App Standard uses the
   # account name + key to mount its internal file share at startup.
-  shared_access_key_enabled       = true
-  tags                            = var.tags
+  shared_access_key_enabled = true
+  tags                      = var.tags
 
   network_rules {
     default_action = "Allow"

@@ -118,10 +118,10 @@ resource "azurerm_subnet" "vm" {
 #            removed boolean private_endpoint_network_policies_enabled = false.
 # -----------------------------------------------------------------------------
 resource "azurerm_subnet" "private_endpoint" {
-  name                 = "privateEndpointSubnet"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = [var.private_endpoint_subnet_prefix]
+  name                                          = "privateEndpointSubnet"
+  resource_group_name                           = var.resource_group_name
+  virtual_network_name                          = azurerm_virtual_network.vnet.name
+  address_prefixes                              = [var.private_endpoint_subnet_prefix]
   private_endpoint_network_policies             = "Disabled"
   private_link_service_network_policies_enabled = false #Private Endpoint needs its own subnet You can't reuse the workload subnet — PE subnet should have private_endpoint_network_policies = Disabled
 

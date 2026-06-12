@@ -21,7 +21,7 @@ resource "azurerm_private_endpoint" "blob" {
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_endpoint_subnet_id
   tags                = var.tags
-# The connection_method block automatically creates a Private Link
+  # The connection_method block automatically creates a Private Link
 
   private_service_connection {
     name                           = "blobConnection"

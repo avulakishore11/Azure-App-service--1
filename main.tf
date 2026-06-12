@@ -138,13 +138,13 @@ module "governance" {
 module "redis_cache" {
   source = "./modules/redis_cache"
 
-  location             = var.location
-  resource_group_name  = azurerm_resource_group.resource_group.name
-  resource_group_id    = azurerm_resource_group.resource_group.id
-  redis_name           = local.redis_name
-  redis_sku_size       = var.redis_sku_size
-  uami_principal_id    = module.identity.identity_principal_id
-  tags                 = local.tags
+  location            = var.location
+  resource_group_name = azurerm_resource_group.resource_group.name
+  resource_group_id   = azurerm_resource_group.resource_group.id
+  redis_name          = local.redis_name
+  redis_sku_size      = var.redis_sku_size
+  uami_principal_id   = module.identity.identity_principal_id
+  tags                = local.tags
 }
 
 resource "azurerm_role_assignment" "logic_app_vm_contributor" {
