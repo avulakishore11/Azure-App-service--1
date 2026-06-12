@@ -1,4 +1,4 @@
-subscription_id        = "7a6d2623-b7d9-467b-ab2f-d71d7bf6d45d"
+5subscription_id        = "7a6d2623-b7d9-467b-ab2f-d71d7bf6d45d"
 location               = "centralus"
 location_code_override = "eus"
 subscription           = "corit"
