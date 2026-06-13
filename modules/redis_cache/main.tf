@@ -6,9 +6,9 @@
 # -----------------------------------------------------------------------------
 terraform {
   required_providers {
-    type = "Microsoft.Cache/redisEnterprise@2024-09-01-preview"
     azapi = {
-      source = "azure/azapi"
+      source  = "azure/azapi"
+      version = "~> 2.0"
     }
   }
 }
