@@ -22,10 +22,6 @@ variables:
   value: 'saterrastatedev02'
 - name: backendContainer
   value: 'tfstate'
-- name: stateKey
-  value: 'dev/terraform.tfstate'
-- name: varFile
-  value: 'environment/dev.tfvars'
 
 stages:
 
@@ -62,10 +58,17 @@ stages:
         trivy config . --exit-code 0    # --exit-code 0: report findings but don't fail the build yet
       displayName: 'Trivy Security Scan'
 
+
+
+
+
 - stage: Dev
   displayName: 'Deploy to Dev'
   dependsOn: Validate
   condition: succeeded('Validate')
+  variables:
+    varFile: 'environment/dev.tfvars'
+    stateKey: 'dev/terraform.tfstate'
   jobs:
   - job: TerraformDev
     displayName: 'Terraform Dev'
@@ -94,7 +97,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'plan'
-        commandOptions: '-var-file=$(varFile) -out=tfplan-dev'
+        commandOptions: '-var-file=$(varFile) -out=tfplan-dev -exclude="module.governance"'
         environmentServiceNameAzureRM: $(serviceConnection)
       env:
         TF_VAR_subscription_id: $(subscription_id)
