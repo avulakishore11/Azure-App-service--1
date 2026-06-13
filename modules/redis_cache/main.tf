@@ -20,6 +20,10 @@ resource "azapi_resource" "redis" {
   parent_id = var.resource_group_id
   tags      = var.tags
 
+  # azapi v2 cannot parse the identity of redisEnterprise responses correctly;
+  # disabling schema validation is the provider-documented workaround.
+  schema_validation_enabled = false
+
   body = {
     sku = {
       name = var.redis_sku_size # B0 dev/staging; prod size decided from dev metrics
@@ -30,7 +34,7 @@ resource "azapi_resource" "redis" {
     }
   }
 
-  response_export_values = ["properties.hostName"]
+  response_export_values = ["*"]
 }
 
 # Database within the Redis instance (where access policies + port live)
