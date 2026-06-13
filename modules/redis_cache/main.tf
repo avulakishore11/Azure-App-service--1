@@ -59,7 +59,7 @@ resource "azapi_resource" "redis_db" {
 # Grants the UAMI data-plane access to Redis. This is NOT Azure RBAC/IAM.
 # -----------------------------------------------------------------------------
 resource "azapi_resource" "redis_access_policy" {
-  type = "Microsoft.Cache/redisEnterprise/databases/accessPolicyAssignments@2024-06-01-preview"
+  type = "Microsoft.Cache/redisEnterprise/databases/accessPolicyAssignments@2024-09-01-preview"
   name      = "appsvcUamiContributor"
   parent_id = azapi_resource.redis_db.id
 
