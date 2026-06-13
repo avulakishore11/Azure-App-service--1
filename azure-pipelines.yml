@@ -97,7 +97,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'plan'
-        commandOptions: '-var-file=$(varFile) -out=tfplan-dev -exclude="module.governance"'
+        commandOptions: '-var-file=$(varFile) -out=tfplan-dev'
         environmentServiceNameAzureRM: $(serviceConnection)
       env:
         TF_VAR_subscription_id: $(subscription_id)

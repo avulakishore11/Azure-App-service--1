@@ -24,4 +24,5 @@ department  = "corporate IT"
 created_by  = "kishore avula"
 update_ring = "Ring 2"
 
-redis_sku_size = "Balanced_B0"
+redis_sku_size    = "Balanced_B0"
+deploy_governance = true

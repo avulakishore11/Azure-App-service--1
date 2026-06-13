@@ -126,6 +126,7 @@ module "identity" {
 }
 
 module "governance" {
+  count  = var.deploy_governance ? 1 : 0 # Governance module is optional based on the deploy_governance variable
   source = "./modules/governance"
 
   resource_group_id   = azurerm_resource_group.resource_group.id

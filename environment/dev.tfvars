@@ -23,4 +23,5 @@ department  = "corporate IT"
 created_by  = "kishore avula"
 environment = "dev"
 
-redis_sku_size = "Balanced_B0"
+redis_sku_size    = "Balanced_B0"
+deploy_governance = false

@@ -119,3 +119,9 @@ variable "redis_sku_size" {
   type        = string
   default     = "Balanced_B0"
 }
+
+variable "deploy_governance" {
+  description = "Set to false to skip the governance module (policy assignments + management lock). Useful when policies already exist at the subscription level."
+  type        = bool
+  default     = true
+}
