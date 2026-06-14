@@ -57,6 +57,12 @@ variable "health_check_path" {
   default     = "/api/health"
 }
 
+variable "content_share_name" {
+  description = "Name of the Azure file share used by the Logic App Standard runtime for workflow content. Must match the share created in the storage module and WEBSITE_CONTENTSHARE in app_settings."
+  type        = string
+  default     = "fileshare"
+}
+
 variable "allowed_ip_ranges" {
   description = "Additional IP address ranges (CIDR notation) allowed to access the Logic App. The VNet subnet is always allowed; add public IPs or on-prem ranges here."
   type        = list(string)

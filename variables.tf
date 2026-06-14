@@ -120,6 +120,12 @@ variable "logic_app_allowed_ip_ranges" {
   default     = []
 }
 
+variable "storage_allowed_ip_rules" {
+  description = "Public IP addresses or CIDR ranges allowed through the storage account firewall (e.g. your client IP for Storage Explorer / portal access). Single IPs must be in x.x.x.x format without /32."
+  type        = list(string)
+  default     = []
+}
+
 variable "redis_sku_size" {
   description = "Azure Managed Redis Balanced tier size. Use Balanced_B0 for dev/uat; increase for prod based on observed memory and client metrics."
   type        = string

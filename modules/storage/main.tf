@@ -21,11 +21,15 @@ resource "azurerm_storage_account" "storage_account" {
     default_action             = "Deny"
     bypass                     = ["AzureServices", "Logging", "Metrics"]
     virtual_network_subnet_ids = [var.logic_app_subnet_id]
+    ip_rules                   = var.allowed_ip_rules # Added to allow-list so you can access the storage account from your client IP (e.g. Storage Explorer, portal).
   }
 }
 
+# [Fix 3 — IMPORTANT] Share name driven by var.content_share_name so it stays in
+# sync with WEBSITE_CONTENTSHARE in the Logic App app_settings. Both default to
+# "fileshare"; override from the root if you need a different name.
 resource "azurerm_storage_share" "fileshare" {
-  name               = "fileshare"
+  name               = var.content_share_name
   storage_account_id = azurerm_storage_account.storage_account.id
   quota              = 100
 }

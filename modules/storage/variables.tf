@@ -23,6 +23,18 @@ variable "logic_app_subnet_id" {
   type        = string
 }
 
+variable "content_share_name" {
+  description = "Name of the Azure file share created for the Logic App Standard runtime. Must match WEBSITE_CONTENTSHARE in the Logic App app_settings — if they differ the runtime auto-creates a second share and this one is orphaned."
+  type        = string
+  default     = "fileshare"
+}
+
+variable "allowed_ip_rules" {
+  description = "List of public IP addresses or CIDR ranges allowed through the storage account firewall (e.g. your client IP for Storage Explorer / portal access)."
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "Tags to apply to all storage resources."
   type        = map(string)

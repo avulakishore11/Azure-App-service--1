@@ -41,6 +41,7 @@ module "storage" {
   storage_account_name = local.storage_account_name
   sku_name             = var.storage_sku
   logic_app_subnet_id  = module.network.logic_app_subnet_id
+  allowed_ip_rules     = var.storage_allowed_ip_rules
   tags                 = local.tags
 }
 
@@ -102,6 +103,12 @@ module "logic_app" {
   health_check_path                = var.health_check_path
   allowed_ip_ranges                = var.logic_app_allowed_ip_ranges
   tags                             = local.tags
+
+  # [Fix 4 — IMPORTANT] Private endpoints and DNS zones must be fully provisioned
+  # before the Logic App starts. If the Logic App initialises before the DNS zones
+  # are ready it cannot resolve the storage private endpoint hostname → startup
+  # failures that look like intermittent storage connectivity errors.
+  depends_on = [module.private_endpoints, module.dns_zone]
 }
 
 module "vm" {

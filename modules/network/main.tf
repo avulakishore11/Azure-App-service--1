@@ -187,9 +187,9 @@ resource "azurerm_network_security_group" "logic_app_nsg" {
     destination_address_prefix = var.vm_subnet_prefix
   }
 
-  # [Change 7] Priority 510 — application rule (was 110 before alignment)
+  # [Change 7] Priority 510 — application rule (was 110 before alignment); name fixed: slashes are invalid in Azure NSG rule names
   security_rule {
-    name                       = "AllowOutboundToPE-blob/file/queue/table"
+    name                       = "AllowOutboundToPE-storage"
     priority                   = 510
     direction                  = "Outbound"
     access                     = "Allow"
