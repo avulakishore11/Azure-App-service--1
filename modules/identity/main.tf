@@ -44,3 +44,4 @@ resource "azurerm_role_assignment" "logic_app_storage_table_contributor" {
   scope                = var.storage_account_id
   role_definition_name = "Storage Table Data Contributor"
   principal_id         = var.logic_app_principal_id
+}
