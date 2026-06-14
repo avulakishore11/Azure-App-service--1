@@ -99,7 +99,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'plan'
-        commandOptions: '-var-file=$(varFile) -out=tfplan-dev'
+        commandOptions: '-var-file=$(varFile) -var "deploy_redis_cache=false" -var "deploy_governance=false" -out=tfplan-dev'
         environmentServiceNameAzureRM: $(serviceConnection)
       env:
         TF_VAR_subscription_id: $(subscription_id)

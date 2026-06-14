@@ -111,6 +111,7 @@ resource "azurerm_private_endpoint" "file" {
 # -----------------------------------------------------------------------------
 
 resource "azurerm_private_endpoint" "redis" {
+  count               = var.deploy_redis_cache ? 1 : 0
   name                = "pe-redis-${var.redis_name}"
   location            = var.location
   resource_group_name = var.resource_group_name

@@ -120,6 +120,14 @@ variable "redis_sku_size" {
   default     = "Balanced_B0"
 }
 
+# Optional toggles for modules that aren't always needed (e.g. governance in dev, Redis Cache if not using it at all, etc.)
+
+variable "deploy_redis_cache" {
+  description = "Set to false to skip provisioning the Redis Cache module. Useful if you don't need Redis or are deploying to an environment where it already exists."
+  type        = bool
+  default     = true
+}
+
 variable "deploy_governance" {
   description = "Set to false to skip the governance module (policy assignments + management lock). Useful when policies already exist at the subscription level."
   type        = bool

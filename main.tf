@@ -56,8 +56,9 @@ module "private_endpoints" {
   queue_dns_zone_id          = module.dns_zone.queue_dns_zone_id
   file_dns_zone_id           = module.dns_zone.file_dns_zone_id
   redis_name                 = local.redis_name
-  redis_resource_id          = module.redis_cache.redis_id
+  redis_resource_id          = var.deploy_redis_cache ? module.redis_cache[0].redis_id : ""
   redis_dns_zone_id          = module.dns_zone.redis_dns_zone_id
+  deploy_redis_cache         = var.deploy_redis_cache
   tags                       = local.tags
 
   depends_on = [module.network, module.storage, module.dns_zone, module.redis_cache]
@@ -137,6 +138,7 @@ module "governance" {
 }
 
 module "redis_cache" {
+  count  = var.deploy_redis_cache ? 1 : 0 # Redis Cache module is optional based on the deploy_redis_cache variable
   source = "./modules/redis_cache"
 
   location            = var.location
@@ -198,9 +200,11 @@ module "diag_vm" {
 
 # Azure Managed Redis — metrics only (no GA log categories for redisEnterprise)
 module "diag_redis" {
-  source                     = "./modules/diagnostic_setting"
+  count  = var.deploy_redis_cache ? 1 : 0
+  source = "./modules/diagnostic_setting"
+
   name                       = "diag-${local.redis_name}"
-  target_resource_id         = module.redis_cache.redis_id
+  target_resource_id         = module.redis_cache[0].redis_id
   log_analytics_workspace_id = module.monitoring.workspace_id
   log_categories             = []
 }

@@ -43,6 +43,12 @@ variable "file_dns_zone_id" {
   type        = string
 }
 
+variable "deploy_redis_cache" {
+  description = "When false, the Redis private endpoint is skipped."
+  type        = bool
+  default     = true
+}
+
 variable "redis_name" {
   description = "Redis instance name — used to name the private endpoint resource."
   type        = string
