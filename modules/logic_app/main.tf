@@ -71,10 +71,10 @@ resource "azurerm_logic_app_standard" "logic_app" {
     # Terraform-managed one is never used.
     "WEBSITE_CONTENTSHARE" = var.content_share_name
 
-    # [Fix 5 — MINOR] Explicitly declare the Functions host major version.
-    # The provider sets this automatically but omitting it causes Terraform to show
-    # a perpetual diff when the Azure portal stamps a different default on the resource.
-    "FUNCTIONS_EXTENSION_VERSION" = "~4"
+    # [Fix 5 — REMOVED] FUNCTIONS_EXTENSION_VERSION is intentionally omitted.
+    # azurerm_logic_app_standard manages this setting internally; explicitly setting
+    # it in app_settings causes a 409 Conflict ("parameter already exists") from the
+    # Azure API because the provider already injected it before processing app_settings.
 
     "FUNCTIONS_WORKER_RUNTIME"                   = "dotnet"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"      = var.app_insights_connection_string
