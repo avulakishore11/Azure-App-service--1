@@ -23,13 +23,24 @@ resource "azurerm_logic_app_standard" "logic_app" {
   }
 
   site_config {
-    health_check_path = var.health_check_path
+    health_check_path             = var.health_check_path
+    ip_restriction_default_action = "Deny"
 
     ip_restriction {
       virtual_network_subnet_id = var.subnet_id
       action                    = "Allow"
       priority                  = 500
       name                      = "AllowFromVNetSubnet"
+    }
+
+    dynamic "ip_restriction" {
+      for_each = var.allowed_ip_ranges
+      content {
+        ip_address = ip_restriction.value
+        action     = "Allow"
+        priority   = 100 + ip_restriction.key
+        name       = "AllowIP-${ip_restriction.key + 1}"
+      }
     }
   }
 
@@ -46,27 +57,3 @@ resource "azurerm_logic_app_standard" "logic_app" {
     "AzureWebJobsStorage__accountName" = var.storage_account_name
   }
 }
-
-# -----------------------------------------------------------------------------
-# Role assignments — scope each to the storage account, not the subscription,
-# to follow least-privilege. System-assigned identity is created with the Logic
-# App so principal_id is available once the resource exists.
-# -----------------------------------------------------------------------------
-resource "azurerm_role_assignment" "logic_app_storage_blob_owner" {
-  scope                = var.storage_account_id
-  role_definition_name = "Storage Blob Data Owner"
-  principal_id         = azurerm_logic_app_standard.logic_app.identity[0].principal_id
-}
-
-resource "azurerm_role_assignment" "logic_app_storage_queue_contributor" {
-  scope                = var.storage_account_id
-  role_definition_name = "Storage Queue Data Contributor"
-  principal_id         = azurerm_logic_app_standard.logic_app.identity[0].principal_id
-}
-
-resource "azurerm_role_assignment" "logic_app_storage_table_contributor" {
-  scope                = var.storage_account_id
-  role_definition_name = "Storage Table Data Contributor"
-  principal_id         = azurerm_logic_app_standard.logic_app.identity[0].principal_id
-}
-

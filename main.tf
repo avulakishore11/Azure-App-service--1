@@ -40,6 +40,7 @@ module "storage" {
   resource_group_name  = azurerm_resource_group.resource_group.name
   storage_account_name = local.storage_account_name
   sku_name             = var.storage_sku
+  logic_app_subnet_id  = module.network.logic_app_subnet_id
   tags                 = local.tags
 }
 
@@ -99,6 +100,7 @@ module "logic_app" {
   app_insights_connection_string   = module.monitoring.app_insights_connection_string
   app_insights_instrumentation_key = module.monitoring.app_insights_instrumentation_key
   health_check_path                = var.health_check_path
+  allowed_ip_ranges                = var.logic_app_allowed_ip_ranges
   tags                             = local.tags
 }
 
@@ -119,11 +121,13 @@ module "vm" {
 module "identity" {
   source = "./modules/identity"
 
-  location            = var.location
-  resource_group_name = azurerm_resource_group.resource_group.name
-  identity_name       = local.identity_name
-  virtual_machine_id  = module.vm.vm_id
-  tags                = local.tags
+  location               = var.location
+  resource_group_name    = azurerm_resource_group.resource_group.name
+  identity_name          = local.identity_name
+  virtual_machine_id     = module.vm.vm_id
+  storage_account_id     = module.storage.storage_account_id
+  logic_app_principal_id = module.logic_app.identity_principal_id
+  tags                   = local.tags
 }
 
 module "governance" {

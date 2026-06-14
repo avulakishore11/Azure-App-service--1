@@ -18,8 +18,9 @@ resource "azurerm_storage_account" "storage_account" {
   tags                      = var.tags
 
   network_rules {
-    default_action = "Allow"
-    bypass         = ["AzureServices", "Logging", "Metrics"]
+    default_action             = "Deny"
+    bypass                     = ["AzureServices", "Logging", "Metrics"]
+    virtual_network_subnet_ids = [var.logic_app_subnet_id]
   }
 }
 

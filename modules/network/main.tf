@@ -189,7 +189,7 @@ resource "azurerm_network_security_group" "logic_app_nsg" {
 
   # [Change 7] Priority 510 — application rule (was 110 before alignment)
   security_rule {
-    name                       = "AllowOutboundToPrivateEndpoint"
+    name                       = "AllowOutboundToPE-blob/file/queue/table"
     priority                   = 510
     direction                  = "Outbound"
     access                     = "Allow"

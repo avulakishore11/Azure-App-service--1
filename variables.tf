@@ -114,6 +114,12 @@ variable "health_check_path" {
   default     = "/api/health"
 }
 
+variable "logic_app_allowed_ip_ranges" {
+  description = "IP address ranges (CIDR notation) allowed to access the Logic App in addition to its VNet subnet (e.g. on-prem ranges or trusted public IPs)."
+  type        = list(string)
+  default     = []
+}
+
 variable "redis_sku_size" {
   description = "Azure Managed Redis Balanced tier size. Use Balanced_B0 for dev/uat; increase for prod based on observed memory and client metrics."
   type        = string

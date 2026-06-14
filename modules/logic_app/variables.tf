@@ -57,6 +57,12 @@ variable "health_check_path" {
   default     = "/api/health"
 }
 
+variable "allowed_ip_ranges" {
+  description = "Additional IP address ranges (CIDR notation) allowed to access the Logic App. The VNet subnet is always allowed; add public IPs or on-prem ranges here."
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "Tags to apply to all Logic App resources."
   type        = map(string)

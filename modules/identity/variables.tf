@@ -18,6 +18,16 @@ variable "virtual_machine_id" {
   type        = string
 }
 
+variable "storage_account_id" {
+  description = "Resource ID of the storage account to scope Logic App storage role assignments."
+  type        = string
+}
+
+variable "logic_app_principal_id" {
+  description = "Principal ID of the Logic App Standard system-assigned managed identity."
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to all identity resources."
   type        = map(string)

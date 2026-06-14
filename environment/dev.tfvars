@@ -24,3 +24,7 @@ created_by  = "kishore avula"
 environment = "dev"
 
 redis_sku_size = "Balanced_B0"
+
+# Your public IP — find it at https://whatismyip.com — needed for Logic App HTTP trigger access.
+# Use CIDR notation: e.g. "203.0.113.45/32"
+logic_app_allowed_ip_ranges = ["174.176.38.52/32"]
