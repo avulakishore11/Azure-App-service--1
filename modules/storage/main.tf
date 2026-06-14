@@ -25,9 +25,10 @@ resource "azurerm_storage_account" "storage_account" {
   }
 }
 
-# [Fix 3 — IMPORTANT] Share name driven by var.content_share_name so it stays in
-# sync with WEBSITE_CONTENTSHARE in the Logic App app_settings. Both default to
-# "fileshare"; override from the root if you need a different name.
+# [Fix 3 — REVISED] Share name matches what azurerm_logic_app_standard auto-generates
+# for WEBSITE_CONTENTSHARE (the logic app name in lowercase). WEBSITE_CONTENTSHARE
+# cannot be set in app_settings (provider injects it → 409 Conflict), so the share
+# must be pre-created with the name the provider will derive automatically.
 resource "azurerm_storage_share" "fileshare" {
   name               = var.content_share_name
   storage_account_id = azurerm_storage_account.storage_account.id

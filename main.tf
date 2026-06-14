@@ -42,6 +42,9 @@ module "storage" {
   sku_name             = var.storage_sku
   logic_app_subnet_id  = module.network.logic_app_subnet_id
   allowed_ip_rules     = var.storage_allowed_ip_rules
+  # Share name must match the value azurerm_logic_app_standard auto-generates for
+  # WEBSITE_CONTENTSHARE (the logic app name). Cannot be set in app_settings directly.
+  content_share_name   = local.logic_app_name
   tags                 = local.tags
 }
 

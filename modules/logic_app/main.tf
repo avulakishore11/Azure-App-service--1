@@ -64,12 +64,12 @@ resource "azurerm_logic_app_standard" "logic_app" {
     # module are still present for least-privilege blob/queue/table access; this
     # just removes the duplicate setting that confuses the runtime.
 
-    # [Fix 3 — IMPORTANT] Explicitly pin WEBSITE_CONTENTSHARE to the file share
-    # name that Terraform manages in the storage module. Without this the provider
-    # auto-generates the value as "<logic-app-name>-content", which doesn't match
-    # the pre-created share → the runtime creates a second orphaned share and the
-    # Terraform-managed one is never used.
-    "WEBSITE_CONTENTSHARE" = var.content_share_name
+    # [Fix 3 — REVISED] WEBSITE_CONTENTSHARE is intentionally omitted from app_settings.
+    # azurerm_logic_app_standard injects this setting automatically (derived from the
+    # logic app name). Explicitly setting it here sends the value twice in the same
+    # CreateOrUpdate call → Azure returns 409 "Parameter already exists". The share
+    # in the storage module is renamed to the logic app name so it matches what the
+    # provider auto-generates (see modules/storage/main.tf).
 
     # [Fix 5 — REMOVED] FUNCTIONS_EXTENSION_VERSION is intentionally omitted.
     # azurerm_logic_app_standard manages this setting internally; explicitly setting
